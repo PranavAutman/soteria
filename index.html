@@ -614,6 +614,8 @@ function logSensorData() {
     const Qw = NiclaSenseME.quaternion.data.w.length > 0 ? NiclaSenseME.quaternion.data.w[NiclaSenseME.quaternion.data.w.length - 1] : null;
     const F1 = NiclaSenseME.Forcepad.data.F1.length > 0 ? NiclaSenseME.Forcepad.data.F1[NiclaSenseME.Forcepad.data.F1.length - 1] : null;
     const F2 = NiclaSenseME.Forcepad.data.F2.length > 0 ? NiclaSenseME.Forcepad.data.F2[NiclaSenseME.Forcepad.data.F2.length - 1] : null;
+    const latitude = NiclaSenseME.gps.data.latitude.length > 0 ? NiclaSenseME.gps.data.latitude[NiclaSenseME.gps.data.latitude.length - 1] : null;
+    const longitude = NiclaSenseME.gps.data.longitude.length > 0 ? NiclaSenseME.gps.data.longitude[NiclaSenseME.gps.data.longitude.length - 1] : null;
 
     // If any sensor value is still null, use the last logged value if available
     const lastLogged = loggedData.length > 1 ? loggedData[loggedData.length - 1] : [];
@@ -633,7 +635,9 @@ function logSensorData() {
         Qz !== null ? Qz : (lastLogged[12] !== undefined ? lastLogged[12] : "-"),
         Qw !== null ? Qw : (lastLogged[13] !== undefined ? lastLogged[13] : "-"),
         F1 !== null ? F1 : (lastLogged[14] !== undefined ? lastLogged[14] : "-"),
-        F2 !== null ? F2 : (lastLogged[15] !== undefined ? lastLogged[15] : "-")
+        F2 !== null ? F2 : (lastLogged[15] !== undefined ? lastLogged[15] : "-"),
+        latitude !== null ? latitude : (lastLogged[16] !== undefined ? lastLogged[16] : "-"),
+        longitude !== null ? longitude : (lastLogged[17] !== undefined ? lastLogged[17] : "-")
     ];
 
     loggedData.push(latestData);
