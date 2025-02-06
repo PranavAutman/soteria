@@ -261,12 +261,6 @@
       <img src="Logo-Arduino-Pro-inline.png" style="position: inherit;padding-right: 0px;filter: invert(100%);float: right; grid-column: 3; width: 120%; margin-top: 0%;" />
     </div>
     
-    <div class="double widget">
-      <div class="label">&#128506; GPS Location</div>
-      <div id="gps-value" class="label">Latitude: -, Longitude: -</div>
-      <div id="gps-map" style="width: 100%; height: 300px; border-radius: 10px;"></div>
-    </div>
-    
     <div class="square widget" id="3d">
       <div class="label">&#128230; Quaternion Rotation</div>
       <div class="quaternion" id="canvasDigits">
@@ -380,6 +374,11 @@
     <button type="button" onclick="stopLogging()">Stop Logging</button>
     <button type="button" onclick="pauseLogging()">Pause Logging</button>
     <button type="button" onclick="resumeLogging()">Resume Logging</button>
+  </div>
+  <div class="double widget">
+  <div class="label">&#128506; GPS Location</div>
+  <div id="gps-value" class="label">Latitude: -, Longitude: -</div>
+  <div id="gps-map" style="width: 100%; height: 300px; border-radius: 10px;"></div>
   </div>
   </div>
 </body>
