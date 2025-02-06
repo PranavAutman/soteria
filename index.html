@@ -264,6 +264,13 @@
       <div class="label" id="gyroscope-value"></div>
       <div id="gyroscope" class="graph"></div>
     </div>
+    
+    <div class="double widget">
+      <div class="label">&#128506; GPS Location</div>
+      <div id="gps-value" class="label">Latitude: -, Longitude: -</div>
+      <div id="gps-map" class="doublegraph"></div>
+    </div>
+
 
     <div class="double widget">
       <div class="label">&#128171; Forcepad</div>
@@ -411,6 +418,14 @@
       structure: ['Float32', 'Float32', 'Float32'],
       data: { 'x': [], 'y': [], 'z': [] }
     },
+
+    gps: 
+    {
+      uuid: '19b10000-9008-537e-4f6c-d104768a1214', 
+      properties: ['BLENotify'],
+      structure: ['Float32', 'Float32'], 
+      data: { 'latitude': [], 'longitude': [] }
+    };
     led: {
       uuid: '19b10000-8001-537e-4f6c-d104768a1214',
       properties: ['BLEWrite'],
@@ -737,6 +752,15 @@ function downloadParticipantData() {
       if (sensor === 'userData') {
         NiclaSenseME[sensor].characteristic = await service.getCharacteristic(NiclaSenseME[sensor].uuid);
       }
+      
+      if (sensor === 'gps') {
+        NiclaSenseME[sensor].characteristic = await service.getCharacteristic(NiclaSenseME[sensor].uuid);
+        NiclaSenseME[sensor].characteristic.addEventListener('characteristicvaluechanged', function (event) {
+          handleIncoming(NiclaSenseME[sensor], event.target.value);
+        });
+        await NiclaSenseME[sensor].characteristic.startNotifications();
+      }
+      
       if (sensor === 'control') {
         NiclaSenseME[sensor].characteristic = await service.getCharacteristic(NiclaSenseME[sensor].uuid);
       }
@@ -756,41 +780,59 @@ function downloadParticipantData() {
     initColorPicker();
   }
 
-  function handleIncoming(sensor, dataReceived) {
-    const columns = Object.keys(sensor.data); // column headings for this sensor
+ function handleIncoming(sensor, dataReceived) {
+    const columns = Object.keys(sensor.data); // Column headings for this sensor
     const typeMap = {
-      "Uint8": { fn: DataView.prototype.getUint8, bytes: 1 },
-      "Uint16": { fn: DataView.prototype.getUint16, bytes: 2 },
-      "Uint32": { fn: DataView.prototype.getUint32, bytes: 4 },
-      "Int16": { fn: DataView.prototype.getInt16, bytes: 2 },
-      "Float32": { fn: DataView.prototype.getFloat32, bytes: 4 },
-      "String": { fn: (dataView, offset) => {
-                  const length = dataView.getUint8(offset);
-                  offset += 1;
-                  const stringValue = String.fromCharCode(...new Array(length).fill(0).map((_, i) => dataView.getUint8(offset + i)));
-                  return { value: stringValue, bytes: length + 1 };
-                  }, bytes: -1 } // Use -1 to indicate variable length
+        "Uint8": { fn: DataView.prototype.getUint8, bytes: 1 },
+        "Uint16": { fn: DataView.prototype.getUint16, bytes: 2 },
+        "Uint32": { fn: DataView.prototype.getUint32, bytes: 4 },
+        "Int16": { fn: DataView.prototype.getInt16, bytes: 2 },
+        "Float32": { fn: DataView.prototype.getFloat32, bytes: 4 },
+        "String": {
+            fn: (dataView, offset) => {
+                const length = dataView.getUint8(offset);
+                offset += 1;
+                const stringValue = String.fromCharCode(...new Array(length).fill(0).map((_, i) => dataView.getUint8(offset + i)));
+                return { value: stringValue, bytes: length + 1 };
+            }, bytes: -1
+        } // Use -1 to indicate variable length
     };
+
     var packetPointer = 0, i = 0;
 
     // Read each sensor value in the BLE packet and push into the data array
     sensor.structure.forEach(function (dataType) {
-      // Lookup function to extract data for given sensor property type
-      var dataViewFn = typeMap[dataType].fn.bind(dataReceived);
-      // Read sensor ouput value - true => Little Endian
-      var unpackedValue = dataViewFn(packetPointer, true);
-      // Push sensor reading onto data array
-      sensor.data[columns[i]].push(unpackedValue);
-      // Keep array at buffer size
-      if (sensor.data[columns[i]].length > maxRecords) { sensor.data[columns[i]].shift(); }
-      // move pointer forward in data packet to next value
-      packetPointer += typeMap[dataType].bytes;
-      bytesReceived += typeMap[dataType].bytes;
-      i++;
+        var dataViewFn = typeMap[dataType].fn.bind(dataReceived);
+        var unpackedValue = dataViewFn(packetPointer, true);
+        sensor.data[columns[i]].push(unpackedValue);
+        if (sensor.data[columns[i]].length > maxRecords) { sensor.data[columns[i]].shift(); }
+        packetPointer += typeMap[dataType].bytes;
+        bytesReceived += typeMap[dataType].bytes;
+        i++;
     });
-    sensor.rendered = false; // flag - vizualization needs to be updated
-  }
 
+    sensor.rendered = false; // Flag - visualization needs to be updated
+
+ 
+    if (sensor === NiclaSenseME.gps) {
+        updateGPS(); // Call function to update UI and plot GPS coordinates
+    }
+}
+
+  function updateGPS() {
+    const latitude = NiclaSenseME.gps.data.latitude.latest();
+    const longitude = NiclaSenseME.gps.data.longitude.latest();
+  
+    // Update the displayed text
+    document.getElementById('gps-value').innerHTML = `Latitude: ${latitude.toFixed(6)}, Longitude: ${longitude.toFixed(6)}`;
+  
+    // Update the map plot
+    Plotly.update('gps-map', {
+      x: [[longitude]],
+      y: [[latitude]]
+    });
+  }
+  
   function onDisconnected(event) {
     let device = event.target;
     pairButton.style.backgroundColor = "red";
@@ -834,7 +876,20 @@ function downloadParticipantData() {
 </script>
 
 <script>
-  
+  function initGPSPlot() {
+      Plotly.newPlot('gps-map', [{
+        x: [],
+        y: [],
+        mode: 'markers',
+        marker: { size: 10, color: 'red' }
+      }], {
+        title: 'GPS Location',
+        xaxis: { title: 'Longitude' },
+        yaxis: { title: 'Latitude' },
+        plot_bgcolor: '#111111',
+        paper_bgcolor: '#111111'
+      });
+    }
 
   function initColorPicker() {
     //Default color blue
@@ -1071,6 +1126,7 @@ function downloadParticipantData() {
   initGraph('gas');
   init3D();
   initGraph('Forcepad');
+  initGPSPlot();
   requestAnimationFrame(draw);
   
 
