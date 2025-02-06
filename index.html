@@ -334,7 +334,11 @@
       <div class="label"></div>
       <div class="shortgraph" id="gas"></div>
     </div>
-
+    <div class="double widget">
+    <div class="label">&#128506; GPS Location</div>
+    <div id="gps-value" class="label">Latitude: -, Longitude: -</div>
+    <div id="gps-map" style="width: 100%; height: 300px; border-radius: 10px;"></div>
+    </div>
 
     <div class="widget">
       <form id="userDataForm">
@@ -374,11 +378,6 @@
     <button type="button" onclick="stopLogging()">Stop Logging</button>
     <button type="button" onclick="pauseLogging()">Pause Logging</button>
     <button type="button" onclick="resumeLogging()">Resume Logging</button>
-  </div>
-  <div class="double widget">
-  <div class="label">&#128506; GPS Location</div>
-  <div id="gps-value" class="label">Latitude: -, Longitude: -</div>
-  <div id="gps-map" style="width: 100%; height: 300px; border-radius: 10px;"></div>
   </div>
   </div>
 </body>
