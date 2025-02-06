@@ -11,6 +11,10 @@
   <script src="https://cdn.jsdelivr.net/npm/@jaames/iro/dist/iro.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/109/three.min.js"></script>
   <script src="GLTFLoader.js"></script>
+  <!-- Leaflet.js Library -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+
   <style>
     * {
       font-family: 'Roboto Mono', sans-serif;
@@ -268,9 +272,8 @@
     <div class="double widget">
       <div class="label">&#128506; GPS Location</div>
       <div id="gps-value" class="label">Latitude: -, Longitude: -</div>
-      <div id="gps-map" class="doublegraph"></div>
+      <div id="gps-map" style="width: 100%; height: 300px; border-radius: 10px;"></div>
     </div>
-
 
     <div class="double widget">
       <div class="label">&#128171; Forcepad</div>
@@ -491,7 +494,16 @@
     },
     
   }
+  // Initialize the Leaflet.js map
+  var map = L.map('gps-map').setView([52.453804, -1.949747], 15); // Default center (Birmingham, UK)
   
+  // Load OpenStreetMap tiles
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+  
+  // Create a marker for the GPS position
+  var gpsMarker = L.marker([52.453804, -1.949747]).addTo(map);
 
   const sensors = Object.keys(NiclaSenseME);
   const SERVICE_UUID = '19b10000-0000-537e-4f6c-d104768a1214';
@@ -820,20 +832,19 @@ function downloadParticipantData() {
     }
 }
 
-  function updateGPS() {
+function updateGPS() {
     const latitude = NiclaSenseME.gps.data.latitude.latest();
     const longitude = NiclaSenseME.gps.data.longitude.latest();
-  
-    // Update the displayed text
+
+    // Update displayed GPS text
     document.getElementById('gps-value').innerHTML = `Latitude: ${latitude.toFixed(6)}, Longitude: ${longitude.toFixed(6)}`;
-  
-    // Update the map plot
-    Plotly.update('gps-map', {
-      x: [[longitude]],
-      y: [[latitude]]
-    });
-  }
-  
+
+    // Move the marker to new coordinates
+    gpsMarker.setLatLng([latitude, longitude]);
+
+    // Center map on the new location
+    map.setView([latitude, longitude], 15);
+}
   function onDisconnected(event) {
     let device = event.target;
     pairButton.style.backgroundColor = "red";
