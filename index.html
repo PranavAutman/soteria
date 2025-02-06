@@ -47,16 +47,15 @@
     }
 
     .container {
-      display: grid;
-      grid-template-columns: 2fr 1fr; /* Left (Sensors) | Right (Controls) */
-      gap: 20px;
-      width: 90%;
-      max-width: 1200px;
-      margin: 20px auto;
+      width: 960px;
+      height: 384px;
+      margin-top: 30px;
+      margin-bottom: 7.5px;
+      margin: 0 auto;
     }
   #gps-map {
     width: 100%; /* Ensure it stretches across the full container */
-    height: 150px; /* Adjust height for better fit */
+    height: 250px; /* Adjust height for better fit */
     border-radius: 10px; /* Keep rounded corners */
 }
 
@@ -78,12 +77,18 @@
       margin: 0 auto;
     }
 
-      .widget {
-        background-color: #111111;
-        padding: 15px;
-        border-radius: 10px;
-        border: 1px solid #333;
-      }
+    .widget {
+      background-color: #111111;
+      border: 1px solid #000000;
+      border-radius: 0px;
+      padding: 20px;
+      margin: auto;
+      float: left;
+      color: #DAE3E3;
+      padding-bottom: 1px;
+      width: 300px;
+
+    }
 
     a {
       color: white;
