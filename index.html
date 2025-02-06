@@ -1007,9 +1007,9 @@ function downloadParticipantData() {
   
     // Get the quaternion values
     var x = NiclaSenseME['quaternion'].data.x.latest();
-    var w = NiclaSenseME['quaternion'].data.y.latest();
+    var w = NiclaSenseME['quaternion'].data.w.latest();
     var z = NiclaSenseME['quaternion'].data.z.latest();
-    var y = NiclaSenseME['quaternion'].data.w.latest();
+    var y = NiclaSenseME['quaternion'].data.y.latest();
 
     // Construct the quaternion object with the values and apply that to the 3D model
     const quaternion = new THREE.Quaternion(x, y, z, w);
