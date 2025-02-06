@@ -53,7 +53,30 @@
       margin-bottom: 7.5px;
       margin: 0 auto;
     }
+  #gps-map {
+    width: 100%; /* Ensure it stretches across the full container */
+    height: 250px; /* Adjust height for better fit */
+    border-radius: 10px; /* Keep rounded corners */
+}
 
+    /* Fix widget container to maintain proper alignment */
+    .double.widget {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center content inside */
+        justify-content: center;
+        text-align: center;
+        width: 100%;
+        min-height: 300px; /* Ensure consistent height */
+    }
+    
+    /* Adjust text positioning */
+    #gps-value {
+        text-align: center;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+    
     #userDataForm {
       display: flex;
       flex-direction: column;
