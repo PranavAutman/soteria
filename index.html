@@ -14,7 +14,25 @@
   <!-- Leaflet.js Library -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD81AhadqEf78-RxAnHk1aJ9vWln-cMdb4",
+      authDomain: "soteria-dashboard.firebaseapp.com",
+      databaseURL: "https://soteria-dashboard-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "soteria-dashboard",
+      storageBucket: "soteria-dashboard.appspot.com",
+      messagingSenderId: "88814925000",
+      appId: "1:88814925000:web:3b3a003c5e022c828f61fd",
+      measurementId: "G-01VMKHE04L"
+    };
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+  </script>
   <style>
     * {
       font-family: 'Roboto Mono', sans-serif;
@@ -644,6 +662,18 @@ function logSensorData() {
     ];
 
     loggedData.push(latestData);
+    firebase.database().ref("participants/" + participantName + "/data").push({
+    timestamp,
+    temperature,
+    humidity,
+    pressure,
+    Ax, Ay, Az,
+    Gx, Gy, Gz,
+    Qx, Qy, Qz, Qw,
+    F1, F2,
+    latitude,
+    longitude
+  });
 }
 
 function downloadLoggedData() {
